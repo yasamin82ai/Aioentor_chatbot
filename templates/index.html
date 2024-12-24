@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aiomentor Chatbot</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .chat-container {
+      width: 90%;
+      max-width: 450px;
+      height: 90%;
+      max-height: 700px;
+      background-color: #ffffff;
+      border-radius: 25px;
+      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 2px solid #e0e0e0;
+    }
+
+    .chat-header {
+      background-color: #017a8f;
+      color: #ffffff;
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-header img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+    }
+
+    .chat-header .chat-info h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .chat-header .chat-info p {
+      margin: 0;
+      font-size: 12px;
+      opacity: 0.85;
+    }
+
+    .refresh-btn {
+      background-color: #017a8f;
+      color: #ffffff;
+      border: 2px solid #017a8f;
+      border-radius: 50%;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .refresh-btn:hover {
+      background-color: #ffffff;
+      color: #017a8f;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+      transform: scale(1.1);
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 10px 15px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-intro {
+      text-align: center;
+      margin-bottom: 15px;
+      animation: fadeIn 1s ease;
+    }
+
+    .chat-intro img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+
+    .chat-intro h2 {
+      margin: 0;
+      font-size: 18px;
+      color: #017a8f;
+    }
+
+    .chat-intro p {
+      margin: 10px 0;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .message {
+      margin-bottom: 10px;
+      padding: 10px 15px;
+      border-radius: 15px;
+      max-width: 80%;
+      line-height: 1.5;
+      font-size: 14px;
+      opacity: 0;
+      animation: fadeIn 0.5s forwards;
+    }
+
+    .user-message {
+      background-color: #017a8f;
+      color: #ffffff;
+      align-self: flex-end;
+    }
+
+    .bot-message {
+      background-color: #e9f0ff;
+      color: #333333;
+      align-self: flex-start;
+      border: 1px solid #c8d7ff;
+    }
+
+    .rtl {
+      direction: rtl;
+      text-align: right;
+    }
+
+    .ltr {
+      direction: ltr;
+      text-align: left;
+    }
+
+    .timestamp {
+      font-size: 12px;
+      color: #a0a0a0;
+      text-align: center;
+      margin: 10px 0;
+      width: 100%;
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 10px 15px;
+      border-top: 1px solid #ddd;
+      background-color: #ffffff;
+    }
+
+    #user-input {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 25px;
+      outline: none;
+      font-size: 14px;
+      background-color: #f9f9f9;
+    }
+
+    #send-btn {
+      margin-left: 10px;
+      padding: 10px 15px;
+      background-color: #017a8f;
+      color: #ffffff;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Typing animation */
+    .typing-dots {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .typing-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #017a8f;
+      animation: typing 1.5s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) {
+      animation-delay: 0s;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.3s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.6s;
+    }
+
+    @keyframes typing {
+      0%, 100% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <img src="/static/1.webp" alt="Bot Profile">
+      <div class="chat-info">
+        <h2>AioMentor Chatbot</h2>
+        <p>آیومنتور، همراه خلاق و هوشمند شما</p>
+      </div>
+      <button class="refresh-btn" id="refresh-btn">↻</button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-intro" id="chat-intro">
+        <img src="/static/1.webp" alt="Bot Logo">
+        <h2>Welcome to Aiolearn</h2>
+        <p>با آیومنتور، هر چالشی به فرصت تبدیل می‌شود</p>
+      </div>
+      <div class="timestamp">Today</div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="user-input" placeholder="پیام خود را وارد کنید...">
+      <button id="send-btn">ارسال</button>
+    </div>
+  </div>
+
+  <script>
+    const sendBtn = document.getElementById('send-btn');
+    const userInput = document.getElementById('user-input');
+    const chatMessages = document.getElementById('chat-messages');
+    const refreshBtn = document.getElementById('refresh-btn');
+
+    sendBtn.addEventListener('click', () => {
+      const message = userInput.value.trim();
+      if (message) {
+        const userMessage = document.createElement('div');
+        userMessage.className = `message user-message ${isPersian(message) ? 'rtl' : 'ltr'}`;
+        userMessage.textContent = message;
+        chatMessages.appendChild(userMessage);
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // ایجاد پیام در حال پردازش با انیمیشن نقطه
+        const processingMessage = document.createElement('div');
+        processingMessage.className = 'message bot-message typing-dots';
+        processingMessage.innerHTML = `<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>`;
+        chatMessages.appendChild(processingMessage);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        userInput.value = '';
+
+        // ارسال درخواست به سرور برای دریافت پاسخ
+        fetch('/ask', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: `message=${message}`
+        })
+        .then(response => response.json())
+        .then(data => {
+          // حذف پیام در حال پردازش
+          processingMessage.remove();
+
+          // نمایش پاسخ ربات با فرمت HTML
+          const botMessage = document.createElement('div');
+          botMessage.className = `message bot-message ${isPersian(data.response) ? 'rtl' : 'ltr'}`;
+          botMessage.innerHTML = data.response
+            .replace(/\n/g, '<br>')
+            .replace(/•/g, '&bull;'); // تبدیل بولت‌پوینت به HTML
+          chatMessages.appendChild(botMessage);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          processingMessage.remove();
+          const botMessage = document.createElement('div');
+          botMessage.className = 'message bot-message';
+          botMessage.textContent = 'خطا در پردازش پاسخ';
+          chatMessages.appendChild(botMessage);
+        });
+      }
+    });
+
+    refreshBtn.addEventListener('click', () => {
+      chatMessages.innerHTML = 
+        `<div class="chat-intro" id="chat-intro">
+          <img src="static/4.png" alt="Bot Logo">
+          <h2>Welcome to Aiolearnbot</h2>
+          <p>آموزش تخصصی برنامه‌نویسی و هوش مصنوعی</p>
+        </div>
+        <div class="timestamp">Today</div>`;
+      chatMessages.scrollTop = 0;
+    });
+
+    function isPersian(text) {
+      const persianRegex = /[\u0600-\u06FF]/;
+      return persianRegex.test(text);
+    }
+  </script>
+</body>
+</html>
