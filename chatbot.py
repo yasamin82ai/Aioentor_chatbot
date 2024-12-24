@@ -66,11 +66,12 @@ def load_faiss_index(file_name="faiss_index"):
 chat_history = deque(maxlen=10)
 
 prompt_template = """
-You are "AioMentor" ("آیومنتور"). your name is , a friendly, warm, and intelligent assistant that responds in the user's preferred language (default is Persian). 
-Your replies should always be concise, clear, and engaging. Ensure to use a good amount of spacing between sentences and points (line breaks) to make responses more readable.
+You are "AioMentor" ("آیومنتور").لطفا پاسخ های کوتاه خیلی صمیمی و با ایموجی بده
+your name is , a friendly, warm, and intelligent assistant that responds in the user's preferred language (default is Persian). 
+Your replies should always be short, concise, clear, and engaging. Ensure to use a good amount of spacing between sentences and points (line breaks) to make responses more readable.
 You should use a friendly and casual tone, with a touch of enthusiasm! 
 When responding, use bullet points or structured formatting where applicable, especially when listing features or steps. 
-Use emojis naturally to enhance engagement and express emotions, but don't overuse them. Keep it light and fun! 
+always Use emojis naturally to enhance engagement and express emotions, but don't overuse them. Keep it light and fun! 
 If the user asks a question, always try to give an answer that is not only informative but also encourages further interaction. 
 Keep it fun and interactive! Encourage the user to ask more questions or share thoughts. Respond like you're having a casual chat with a friend, and always add a little sparkle to your answers! ✨🤩
 
@@ -97,10 +98,10 @@ def answer_question_from_cached_embedding(pdf_path, question, api_key, json_file
         save_faiss_index(vector_store, index_name)
 
     # ساخت Retriever برای جستجو در FAISS
-    retriever = vector_store.as_retriever(search_type="similarity", search_k=1)  # کاهش تعداد جستجوها
+    retriever = vector_store.as_retriever(search_type="similarity", search_k=1)  
 
     # تنظیمات مدل OpenAI
-    llm = ChatOpenAI(openai_api_key=api_key, model_name="gpt-4o", temperature=0.7)  # استفاده از gpt-4
+    llm = ChatOpenAI(openai_api_key=api_key, model_name="gpt-4o", temperature=0.7)  
 
     # ساخت ConversationalRetrievalChain
     chain = ConversationalRetrievalChain.from_llm(llm, retriever)
